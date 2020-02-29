@@ -46,17 +46,18 @@ func (lock *lockObject) TryLock() error {
 	// open database
 	if lock.db == nil {
 		lock.db, err = gorm.Open("mysql", lock.databaseUrl)
-		if err == nil && lock.db != nil {
-			lock.db.DB().SetMaxIdleConns(10)
-			lock.db.DB().SetMaxOpenConns(100)
+		if err != nil {
+			return err
 		}
 
 		defer func() {
-			err := lock.db.Close()
-			if err != nil {
-				fmt.Println("TryLock close db error:", err.Error())
+			if lock.db != nil {
+				err := lock.db.Close()
+				if err != nil {
+					fmt.Println("TryLock close db error:", err.Error())
+				}
+				lock.db = nil
 			}
-			lock.db = nil
 		}()
 	}
 
@@ -85,17 +86,18 @@ func (lock *lockObject) UnLock() error {
 	// open database
 	if lock.db == nil {
 		lock.db, err = gorm.Open("mysql", lock.databaseUrl)
-		if err == nil && lock.db != nil {
-			lock.db.DB().SetMaxIdleConns(10)
-			lock.db.DB().SetMaxOpenConns(100)
+		if err != nil {
+			return err
 		}
 
 		defer func() {
-			err := lock.db.Close()
-			if err != nil {
-				fmt.Println("error:", err.Error())
+			if lock.db != nil {
+				err := lock.db.Close()
+				if err != nil {
+					fmt.Println("TryLock close db error:", err.Error())
+				}
+				lock.db = nil
 			}
-			lock.db = nil
 		}()
 	}
 
