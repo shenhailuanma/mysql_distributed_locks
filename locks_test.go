@@ -1,43 +1,41 @@
 package mysql_distributed_locks
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
+
+var databaseUrl = "root@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=UTC"
+var errorDababaseUrl = "root@tcp(localhost:3306)/nodababase?charset=utf8&parseTime=True&loc=UTC"
+var databaseTable = "distributed_locks_test"
+var lockname = "testLock001"
 
 func TestLockObject_TryLock(t *testing.T) {
 	// new lock
-	lock := NewLock("root@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=UTC",
-		"", "lock001", 10)
+	lock := NewLock(databaseUrl, databaseTable, lockname, 10)
 
 	// trylock
 	err := lock.TryLock()
-	if err != nil  {
+	if err != nil {
 		t.Error("TryLock error:", err.Error())
 	}
 
 	// unlock
 	err = lock.UnLock()
-	if err != nil  {
+	if err != nil {
 		t.Error("UnLock error:", err.Error())
 	}
 }
 
-func TestLockObject_UnLock(t *testing.T) {
+func TestLockObject_DatabaseFailed(t *testing.T) {
 	// new lock
-	lock := NewLock("root@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=UTC",
-		"", "lock002", 1)
+	lock := NewLock(errorDababaseUrl, databaseTable, lockname, 10)
 
-	// try lock
+	// trylock
 	err := lock.TryLock()
-	if err != nil  {
-		t.Error("TryLock error:", err.Error())
-	}
+	assert.NotNil(t, err)
 
-	time.Sleep(time.Second * 5)
-
+	lock.db = nil // reset for testing unlock open database failed
 	err = lock.UnLock()
-	if err != nil  {
-		t.Error("UnLock error:", err.Error())
-	}
+	assert.NotNil(t, err)
 }

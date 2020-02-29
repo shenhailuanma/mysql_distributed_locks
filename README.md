@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `distributed_locks`
 func TestLockObject_TryLock(t *testing.T) {
 	// new lock
 	lock := NewLock("root@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=UTC",
-		"", "lock001", 10)
+		"distributed_locks", "lock001", 10)
 
 	// trylock
 	err := lock.TryLock()

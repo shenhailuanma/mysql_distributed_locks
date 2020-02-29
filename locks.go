@@ -1,7 +1,6 @@
 package mysql_distributed_locks
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	uuid "github.com/satori/go.uuid"
@@ -52,10 +51,7 @@ func (lock *lockObject) TryLock() error {
 
 		defer func() {
 			if lock.db != nil {
-				err := lock.db.Close()
-				if err != nil {
-					fmt.Println("TryLock close db error:", err.Error())
-				}
+				lock.db.Close()
 				lock.db = nil
 			}
 		}()
@@ -92,10 +88,7 @@ func (lock *lockObject) UnLock() error {
 
 		defer func() {
 			if lock.db != nil {
-				err := lock.db.Close()
-				if err != nil {
-					fmt.Println("TryLock close db error:", err.Error())
-				}
+				lock.db.Close()
 				lock.db = nil
 			}
 		}()
@@ -106,13 +99,8 @@ func (lock *lockObject) UnLock() error {
 }
 
 func (lock *lockObject) deleleExpiredLock() {
-
 	if lock.db != nil {
 		var now = time.Now().Unix()
-		err := lock.db.Table(lock.databaseTable).Where("name = ? AND expire_time < ?", lock.name, now).Delete(distributedLock{}).Error
-		if err != nil {
-			fmt.Println("deleleExpiredLock error:", err.Error())
-		}
+		lock.db.Table(lock.databaseTable).Where("name = ? AND expire_time < ?", lock.name, now).Delete(distributedLock{})
 	}
-
 }
