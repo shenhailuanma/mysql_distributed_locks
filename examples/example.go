@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/shenhailuanma/mysql_distributed_locks"
+	mdlocks "github.com/shenhailuanma/mysql_distributed_locks"
 )
 
 func main()  {
@@ -23,7 +23,7 @@ func main()  {
 
 	  return: lock object
 	*/
-	lock := mysql_distributed_locks.NewLock(databaseUrl, databaseTable, lockname, 10)
+	lock := mdlocks.NewLock(databaseUrl, databaseTable, lockname, 10)
 
 	// trylock
 	err := lock.TryLock()
