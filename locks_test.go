@@ -11,7 +11,7 @@ var databaseTable = "distributed_locks_test"
 var lockname = "testLock001"
 
 func TestLockObject_TryLock(t *testing.T) {
-	// new lock
+	// new
 	lock := NewLock(databaseUrl, databaseTable, lockname, 10)
 
 	// trylock

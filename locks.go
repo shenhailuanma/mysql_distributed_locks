@@ -27,6 +27,18 @@ type lockObject struct {
 	db            *gorm.DB
 }
 
+/**
+New a lock object.
+
+params:
+	databaseUrl: database url, format: "username:password@protocol(address)/dbname?param=value",
+				 details: https://github.com/go-sql-driver/mysql#dsn-data-source-name
+	databaseTable: table name in database
+	lockName: lock name
+	timeout: lock timeout in seconds
+
+return: lock object
+ */
 func NewLock(databaseUrl string, databaseTable string, lockName string, timeout int) *lockObject {
 	return &lockObject{
 		databaseUrl:   databaseUrl,
